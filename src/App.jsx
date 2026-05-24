@@ -42,14 +42,10 @@ function App() {
   const [expandedItems, setExpandedItems] = useState({});
   const [showSplash, setShowSplash] = useState(true);
 
-  // Tema renkleri
-  const [themeColor1, setThemeColor1] = useState('#ea580c');
-  const [themeColor2, setThemeColor2] = useState('#f59e0b');
+  // Tema renkleri (1. Renk Cam Göbeği, 2. Renk Mavi)
+  const [themeColor1, setThemeColor1] = useState('#06b6d4');
+  const [themeColor2, setThemeColor2] = useState('#2563eb');
   const [autoCycle, setAutoCycle] = useState(false);
-  const [fontFamily, setFontFamily] = useState('Outfit');
-  const [borderRadius, setBorderRadius] = useState('12px');
-  const [themeMode, setThemeMode] = useState('light');
-  const [bgStyle, setBgStyle] = useState('gradient');
   const cycleRef = useRef(null);
 
   const tabsRef = useRef(null);
@@ -132,13 +128,8 @@ function App() {
             .single();
 
           if (settings) {
-            if (settings.theme_color1) setThemeColor1(settings.theme_color1);
-            if (settings.theme_color2) setThemeColor2(settings.theme_color2);
+            // Renkler kodda cam gobeği ve mavi olarak sabitlenmiştir
             if (settings.auto_cycle !== undefined) setAutoCycle(settings.auto_cycle);
-            if (settings.font_family) setFontFamily(settings.font_family);
-            if (settings.border_radius) setBorderRadius(settings.border_radius);
-            if (settings.theme_mode) setThemeMode(settings.theme_mode);
-            if (settings.bg_style) setBgStyle(settings.bg_style);
           }
         } else {
           setMenu(fallbackMenu);
@@ -177,13 +168,8 @@ function App() {
         filter: 'id=eq.main'
       }, (payload) => {
         if (payload.new) {
-          if (payload.new.theme_color1) setThemeColor1(payload.new.theme_color1);
-          if (payload.new.theme_color2) setThemeColor2(payload.new.theme_color2);
+          // Renkler kodda sabit, sadece auto_cycle realtime senkronize edilir
           if (payload.new.auto_cycle !== undefined) setAutoCycle(payload.new.auto_cycle);
-          if (payload.new.font_family) setFontFamily(payload.new.font_family);
-          if (payload.new.border_radius) setBorderRadius(payload.new.border_radius);
-          if (payload.new.theme_mode) setThemeMode(payload.new.theme_mode);
-          if (payload.new.bg_style) setBgStyle(payload.new.bg_style);
         }
       })
       .subscribe();
@@ -196,23 +182,14 @@ function App() {
     document.documentElement.style.setProperty('--color-primary', themeColor1);
     document.documentElement.style.setProperty('--color-accent', themeColor2);
     
-    // Ek arayüz ayarlarını CSS değişkenlerine aktar
-    document.documentElement.style.setProperty('--font-family', fontFamily);
-    document.documentElement.style.setProperty('--radius', borderRadius);
-    
-    // Tema Modu (Aydınlık / Karanlık Cam Efekti)
-    if (themeMode === 'dark') {
-      document.documentElement.style.setProperty('--glass-bg', 'rgba(15, 23, 42, 0.75)');
-      document.documentElement.style.setProperty('--glass-border', 'rgba(255, 255, 255, 0.1)');
-      document.documentElement.style.setProperty('--text-main', '#f8fafc');
-      document.documentElement.style.setProperty('--text-muted', '#cbd5e1');
-    } else {
-      document.documentElement.style.setProperty('--glass-bg', 'rgba(255, 255, 255, 0.75)');
-      document.documentElement.style.setProperty('--glass-border', 'rgba(255, 255, 255, 0.6)');
-      document.documentElement.style.setProperty('--text-main', '#1e293b');
-      document.documentElement.style.setProperty('--text-muted', '#475569');
-    }
-  }, [themeColor1, themeColor2, fontFamily, borderRadius, themeMode]);
+    // Varsayılan arayüz değişkenleri
+    document.documentElement.style.setProperty('--font-family', "'Outfit', sans-serif");
+    document.documentElement.style.setProperty('--radius', '12px');
+    document.documentElement.style.setProperty('--glass-bg', 'rgba(255, 255, 255, 0.75)');
+    document.documentElement.style.setProperty('--glass-border', 'rgba(255, 255, 255, 0.6)');
+    document.documentElement.style.setProperty('--text-main', '#1e293b');
+    document.documentElement.style.setProperty('--text-muted', '#475569');
+  }, [themeColor1, themeColor2]);
 
   // Otomatik renk döngüsü
   useEffect(() => {
