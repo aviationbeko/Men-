@@ -34,7 +34,7 @@
 }
 
 body {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-family, 'Outfit'), sans-serif;
   background: linear-gradient(-45deg, #fef08a, #fde047, #fcd34d, #f9a8d4, #fef08a);
   background-size: 400% 400%;
   animation: gradientBG 20s ease infinite;
