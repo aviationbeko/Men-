@@ -42,6 +42,12 @@ function App() {
   const [expandedItems, setExpandedItems] = useState({});
   const [showSplash, setShowSplash] = useState(true);
 
+  // Tema renkleri
+  const [themeColor1, setThemeColor1] = useState('#ea580c');
+  const [themeColor2, setThemeColor2] = useState('#f59e0b');
+  const [autoCycle, setAutoCycle] = useState(false);
+  const cycleRef = useRef(null);
+
   const tabsRef = useRef(null);
 
   // Hoş geldiniz (Splash) ekranı zamanlayıcısı (3.5 saniye)
@@ -113,6 +119,19 @@ function App() {
           } else {
             setMenu(fallbackMenu);
           }
+
+          // Tema Ayarlarını da yükle
+          const { data: settings } = await supabase
+            .from('kafana_gore_settings')
+            .select('*')
+            .eq('id', 'main')
+            .single();
+
+          if (settings) {
+            if (settings.theme_color1) setThemeColor1(settings.theme_color1);
+            if (settings.theme_color2) setThemeColor2(settings.theme_color2);
+            if (settings.auto_cycle !== undefined) setAutoCycle(settings.auto_cycle);
+          }
         } else {
           setMenu(fallbackMenu);
         }
@@ -126,6 +145,63 @@ function App() {
 
     fetchMenu();
   }, []);
+
+  // Realtime: Menü değişince otomatik güncelle
+  useEffect(() => {
+    if (!supabase) return;
+
+    const channel = supabase
+      .channel('menu-realtime')
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'kafana_gore_menu',
+        filter: 'id=eq.main'
+      }, (payload) => {
+        if (payload.new?.data) {
+          setMenu(payload.new.data);
+        }
+      })
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'kafana_gore_settings',
+        filter: 'id=eq.main'
+      }, (payload) => {
+        if (payload.new) {
+          if (payload.new.theme_color1) setThemeColor1(payload.new.theme_color1);
+          if (payload.new.theme_color2) setThemeColor2(payload.new.theme_color2);
+          if (payload.new.auto_cycle !== undefined) setAutoCycle(payload.new.auto_cycle);
+        }
+      })
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
+  }, []);
+
+  // CSS değişkenlerini tema renklerine göre güncelle
+  useEffect(() => {
+    document.documentElement.style.setProperty('--color-primary', themeColor1);
+    document.documentElement.style.setProperty('--color-accent', themeColor2);
+  }, [themeColor1, themeColor2]);
+
+  // Otomatik renk döngüsü
+  useEffect(() => {
+    if (cycleRef.current) clearInterval(cycleRef.current);
+    if (!autoCycle) return;
+    let swapped = false;
+    cycleRef.current = setInterval(() => {
+      swapped = !swapped;
+      if (swapped) {
+        document.documentElement.style.setProperty('--color-primary', themeColor2);
+        document.documentElement.style.setProperty('--color-accent', themeColor1);
+      } else {
+        document.documentElement.style.setProperty('--color-primary', themeColor1);
+        document.documentElement.style.setProperty('--color-accent', themeColor2);
+      }
+    }, 4000);
+    return () => clearInterval(cycleRef.current);
+  }, [autoCycle, themeColor1, themeColor2]);
 
   // PC kullanıcıları için Mouse Wheel kaydırma
   useEffect(() => {

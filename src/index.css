@@ -8,13 +8,18 @@
   --accent-color: #ea580c;
   --danger-color: #ef4444;
   --success-color: #10b981;
-  --radius: 12px; /* Smooth rounded corners */
+  --radius: 12px;
   --glass-bg: rgba(255, 255, 255, 0.75);
   --glass-border: rgba(255, 255, 255, 0.6);
   --shadow-glass: 0 8px 32px 0 rgba(234, 179, 8, 0.12);
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
   --shadow-hover: 0 12px 40px -10px rgba(234, 88, 12, 0.25);
+
+  /* Dinamik tema renkleri - JS tarafından güncellenir */
+  --color-primary: #ea580c;
+  --color-accent: #f59e0b;
 }
+
 
 * {
   margin: 0;
@@ -169,10 +174,11 @@ h1 {
 
 .nav-tab.active {
   background: white;
-  color: var(--accent-color);
-  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.15);
+  color: var(--color-primary);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
   border-color: white;
 }
+
 
 /* Layout */
 .main-content {
@@ -298,14 +304,15 @@ h1 {
 }
 
 .menu-card-price {
-  color: var(--accent-color);
+  color: var(--color-primary);
   font-weight: 900;
   font-size: 1.25rem;
-  background: rgba(234, 88, 12, 0.08);
+  background: rgba(0, 0, 0, 0.05);
   padding: 0.25rem 0.65rem;
   border-radius: 8px;
   white-space: nowrap;
 }
+
 
 .menu-card-description {
   font-size: 0.88rem;
